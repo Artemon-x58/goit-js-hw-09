@@ -81,6 +81,8 @@ return
         const futureDate = new Date(selectedDates[0]);
       btnEl.removeAttribute('disabled', 'true')
 
+
+      
 btnEl.addEventListener('click',  () => {
     setInterval(() => {
         const date = new Date();
@@ -91,8 +93,9 @@ btnEl.addEventListener('click',  () => {
 })
     },
   };
-
+  
 flatpickr(inputEl, options);
+
 
   function addLeadingZero(value) {
     return value.toString().padStart(2, "0");
