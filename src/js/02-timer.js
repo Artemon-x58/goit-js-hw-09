@@ -30,9 +30,9 @@ e.style.textAlign = 'center';
 e.style.fontSize = '20px';
 });
 
-btnEl.setAttribute('disabled', 'true')
+btnEl.setAttribute('disabled', 'true') 
 
-const date = new Date();
+// const date = new Date();
 
 function convertMs(ms) {
     // Number of milliseconds per unit of time
@@ -50,53 +50,59 @@ function convertMs(ms) {
     // Remaining seconds
     const seconds = Math.floor((((ms % day) % hour) % minute) / second);
     
-   daysEl.textContent = addLeadingZero(days);
-   hoursEl.textContent = addLeadingZero(hours);
-   minutesEl.textContent = addLeadingZero(minutes);
-   secondsEl.textContent = addLeadingZero(seconds);
-
     return { days, hours, minutes, seconds };
    
-  }
-  
-  function makeInterval () {
-    setInterval(() => {
-        const date = new Date();
-        const sum = futureDate.getTime() - date.getTime();
-    convertMs(sum)
-    }, 1000)
-  }
+  };
 
 const options = {
     enableTime: true,
     time_24hr: true,
-    defaultDate: new Date(),
+    defaultDate: null,
     minuteIncrement: 1,
     onClose(selectedDates) {
-        if(selectedDates[0] < options.defaultDate) {
+      const currentTime = Date.now();
+        if(selectedDates[0].getTime() < currentTime) {
             Notiflix.Notify.failure('Qui timide rogat docet negare');;
-return
         }
-        Notiflix.Notify.success('Let`s go!')
-        const futureDate = new Date(selectedDates[0]);
+        else {
+          Notiflix.Notify.success('Let`s go!')
       btnEl.removeAttribute('disabled', 'true')
-
-
-      
-btnEl.addEventListener('click',  () => {
-    setInterval(() => {
-        const date = new Date();
-        const sum = futureDate.getTime() - date.getTime();
-    convertMs(sum)
-    }, 1000)
-    
-})
+    };
     },
   };
   
-flatpickr(inputEl, options);
+flatpickr('#datetime-picker', options);
+
+function addLeadingZero(value) {
+  return String(value).padStart(2, '0')
+};
+
+btnEl.addEventListener('click', intervalTime)
+
+let intervalId = null;
+
+function intervalTime () {
+  intervalId = setInterval(update, 1000)
+}
+
+function update() {
+  let inputDate = new Date(inputEl.value);
+  const date = Date.now();
+  const delta = inputDate.getTime() - date;
+  const time = convertMs(delta);
+  inputEl.disabled = true;
+  if(delta < 0) {
+    clearInterval(intervalId);
+      inputEl.value = '';
+      inputEl.removeAttribute("disabled")
+      return
+    }
+
+   daysEl.textContent = addLeadingZero(time.days);
+   hoursEl.textContent = addLeadingZero(time.hours);
+   minutesEl.textContent = addLeadingZero(time.minutes);
+   secondsEl.textContent = addLeadingZero(time.seconds);
+};
 
 
-  function addLeadingZero(value) {
-    return value.toString().padStart(2, "0");
-  }
+
